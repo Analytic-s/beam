@@ -1,6 +1,7 @@
 # Beam — Privacy-First Web Analytics
 
 [![CI](https://github.com/scobb/beam/actions/workflows/ci.yml/badge.svg)](https://github.com/scobb/beam/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.0-informational)](CHANGELOG.md)
 [![Live](https://img.shields.io/badge/live-beam.keylightdigital.com-blue)](https://beam.keylightdigital.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
