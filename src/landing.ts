@@ -404,6 +404,19 @@ export function landingPage(
     </div>
   </section>
 
+  <!-- Also from Keylight Digital -->
+  <section class="px-4 sm:px-6 pb-8">
+    <div class="max-w-6xl mx-auto border-t border-gray-100 pt-8">
+      <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-3">Also from Keylight Digital</p>
+      <a href="https://nexus.keylightdigital.dev" class="inline-flex flex-wrap items-center gap-x-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+        <strong class="text-gray-700">Nexus</strong>
+        <span>—</span>
+        <span>AI agent observability. Trace, monitor, and debug your AI agents.</span>
+        <span class="text-gray-400">↗</span>
+      </a>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="border-t border-gray-100 py-10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
