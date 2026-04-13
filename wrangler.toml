@@ -3,9 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
-routes = [
-  { pattern = "beam.keylightdigital.dev/*", zone_name = "keylightdigital.dev" }
-]
+#routes = [
+#  { pattern = "beam.keylightdigital.dev/*", zone_name = "keylightdigital.dev" }
+#]
 
 # Note: beam-privacy.com and www.beam-privacy.com are configured as Worker Custom Domains
 # via the Cloudflare API (not routes) — they appear in the Cloudflare dashboard under
