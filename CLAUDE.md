@@ -190,6 +190,20 @@ For any story that changes UI, verify it works in the browser if you have browse
 
 If no browser tools are available, note in your progress report that manual browser verification is needed.
 
+## Smoke Tests
+
+- **Location:** `test/smoke/smoke.spec.ts` and `test/smoke/ux-audit.spec.ts`
+- **Run locally:** `cd beam && npm run test:smoke` (starts wrangler dev automatically)
+- **Run against prod:** `BASE_URL=https://beam-privacy.com npm run test:smoke`
+- **Run against staging:** `BASE_URL=https://beam-staging.keylightdigital.dev npm run test:smoke`
+
+**Notes:**
+- Production URL is `beam-privacy.com` (not `beam.keylightdigital.com` which returns 526)
+- Signup rate limit: 10/hour/IP on production — run the full suite at most once per hour against prod
+- Login rate limit: 15 attempts/15min/IP — the ux-audit serial tests can hit this if run repeatedly
+- Local dev (`wrangler dev`) skips IP rate limiting, so local runs are safe to repeat
+- 156 total tests: ~150 pass consistently; ux-audit Journey 5 is occasionally flaky (10s timeout in mobile)
+
 ## Stop Condition
 
 After completing a user story, check if ALL stories have `passes: true`.

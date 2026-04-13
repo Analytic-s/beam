@@ -896,3 +896,233 @@ test.describe('OG image route', () => {
     expect(ogImage).toContain('/og/landing')
   })
 })
+
+// ── Tracking script smoke ──────────────────────────────────────────────────────
+
+test.describe('Tracking script', () => {
+  test('GET /js/beam.js returns JS with correct content-type and is under 2KB', async ({ request }) => {
+    const res = await request.get('/js/beam.js')
+    expect(res.status()).toBe(200)
+    const contentType = res.headers()['content-type'] ?? ''
+    expect(contentType).toContain('application/javascript')
+    const body = await res.text()
+    // Must be under 2KB raw (uncompressed)
+    expect(body.length, 'beam.js must be under 2048 bytes raw').toBeLessThan(2048)
+    // Core functionality must be present
+    expect(body).toContain('sendBeacon')
+    expect(body).toContain('api/collect')
+    expect(body).toContain('data-site-id')
+  })
+})
+
+// ── Collect endpoint smoke ──────────────────────────────────────────────────────
+
+test.describe('Collect endpoint', () => {
+  test('OPTIONS /api/collect returns 204 CORS preflight', async ({ request }) => {
+    const res = await request.fetch('/api/collect', {
+      method: 'OPTIONS',
+      headers: {
+        'Origin': 'https://example.com',
+        'Access-Control-Request-Method': 'POST',
+      },
+    })
+    expect(res.status()).toBe(204)
+    const acao = res.headers()['access-control-allow-origin'] ?? ''
+    expect(acao).toBe('*')
+  })
+
+  test('POST /api/collect with missing site_id returns 400', async ({ request }) => {
+    const res = await request.post('/api/collect', {
+      data: { path: '/', referrer: '' },
+      headers: { 'Content-Type': 'application/json' },
+    })
+    expect(res.status()).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('site_id')
+  })
+
+  test('POST /api/collect with unknown site_id returns 400', async ({ request }) => {
+    const res = await request.post('/api/collect', {
+      data: {
+        site_id: '00000000-0000-0000-0000-000000000000',
+        path: '/',
+        referrer: '',
+        screen_width: 1280,
+        language: 'en',
+        timezone: 'UTC',
+      },
+      headers: { 'Content-Type': 'application/json' },
+    })
+    expect(res.status()).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Unknown site_id')
+  })
+
+  test('POST /api/collect accepts a valid pageview for a real site', async ({ page, request }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    // Create a site so we have a real site_id
+    await page.goto('/dashboard/sites/new')
+    await page.fill('input[name="name"]', 'Collect Smoke Site')
+    await page.fill('input[name="domain"]', 'collect-smoke.example.com')
+    await page.click('button[type="submit"]')
+    await page.waitForURL(/\/dashboard\/sites\/[0-9a-f-]+$/)
+    const siteId = page.url().split('/dashboard/sites/')[1]
+
+    // POST without Origin header (no domain mismatch check applies when header is absent)
+    const res = await request.post('/api/collect', {
+      data: {
+        site_id: siteId,
+        path: '/',
+        referrer: '',
+        screen_width: 1280,
+        language: 'en',
+        timezone: 'UTC',
+      },
+      headers: { 'Content-Type': 'application/json' },
+    })
+    // 200 = recorded, 204 = ignored (e.g., bot), both are acceptable non-error responses
+    expect([200, 204], `Expected 200 or 204 from collect but got ${res.status()}`).toContain(res.status())
+  })
+})
+
+// ── Billing page smoke ─────────────────────────────────────────────────────────
+
+test.describe('Billing page', () => {
+  test('billing page renders for free user with upgrade CTA and usage', async ({ page }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    await page.goto('/dashboard/billing')
+    await expect(page.getByRole('heading', { name: 'Billing' })).toBeVisible()
+    // Free user should see upgrade CTA
+    await expect(page.getByRole('button', { name: /upgrade to pro/i })).toBeVisible()
+    // Monthly usage section should render
+    await expect(page.getByText(/pageviews this month/i)).toBeVisible()
+    await page.screenshot({ path: 'screenshots/smoke/desktop-billing-free.png' })
+  })
+
+  test('API key generate redirects free user back to billing (no key shown)', async ({ page }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    // Free user attempts to generate API key — server redirects back without generating one.
+    // page.request shares the browser context cookies, follows redirects, exposes final URL.
+    const response = await page.request.post('/dashboard/billing/api-key/generate')
+    expect(response.url()).toContain('/dashboard/billing')
+    // No api_key_flash param — key was NOT generated for a free user
+    expect(response.url()).not.toContain('api_key_flash')
+  })
+
+  test('API key revoke redirects back with api_key_revoked=1', async ({ page }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    // Revoke always succeeds (sets api_key to NULL), redirects with confirmation param.
+    const response = await page.request.post('/dashboard/billing/api-key/revoke')
+    expect(response.url()).toContain('/dashboard/billing')
+    expect(response.url()).toContain('api_key_revoked=1')
+  })
+
+  test.describe('mobile', () => {
+    test.use({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true })
+    test('billing page is mobile-safe at 375px', async ({ page }) => {
+      const email = uniqueEmail()
+      await signupAndGetSession(page, email)
+
+      await page.goto('/dashboard/billing')
+      await expect(page.getByRole('heading', { name: 'Billing' })).toBeVisible()
+      await assertNoHorizontalOverflow(page, 'billing page')
+      await page.screenshot({ path: 'screenshots/smoke/mobile-billing.png' })
+    })
+  })
+})
+
+// ── Alerts smoke ───────────────────────────────────────────────────────────────
+
+test.describe('Alerts toggle', () => {
+  test('alerts toggle flips enabled/disabled for a site', async ({ page }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    // Create a site
+    await page.goto('/dashboard/sites/new')
+    await page.fill('input[name="name"]', 'Alerts Smoke Site')
+    await page.fill('input[name="domain"]', 'alerts-smoke.example.com')
+    await page.click('button[type="submit"]')
+    await page.waitForURL(/\/dashboard\/sites\/[0-9a-f-]+$/)
+    const siteId = page.url().split('/dashboard/sites/')[1]
+
+    // The site detail page shows a Traffic Alerts toggle button ("Alerts: On" or "Alerts: Off")
+    const alertsBtn = page.getByRole('button', { name: /Alerts: (On|Off)/i })
+    await expect(alertsBtn).toBeVisible()
+    const initialLabel = await alertsBtn.textContent()
+
+    // Click the toggle — form POSTs to /dashboard/sites/:id/alerts and redirects back
+    await alertsBtn.click()
+    await page.waitForURL(new RegExp(`/dashboard/sites/${siteId}$`))
+
+    // Button should now show the opposite state
+    await expect(alertsBtn).toBeVisible()
+    const newLabel = await alertsBtn.textContent()
+    expect(newLabel).not.toBe(initialLabel)
+  })
+})
+
+// ── Settings page smoke ────────────────────────────────────────────────────────
+
+test.describe('Settings page', () => {
+  test('settings page renders with account email and plan', async ({ page }) => {
+    const email = uniqueEmail()
+    await signupAndGetSession(page, email)
+
+    await page.goto('/dashboard/settings')
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+    // Email should appear on the page
+    await expect(page.getByText(email)).toBeVisible()
+    // Plan label should appear
+    await expect(page.getByText(/free|pro/i)).toBeVisible()
+    await page.screenshot({ path: 'screenshots/smoke/desktop-settings.png' })
+  })
+
+  test.describe('mobile', () => {
+    test.use({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true })
+    test('settings page is mobile-safe at 375px', async ({ page }) => {
+      const email = uniqueEmail()
+      await signupAndGetSession(page, email)
+
+      await page.goto('/dashboard/settings')
+      await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+      await assertNoHorizontalOverflow(page, 'settings page')
+    })
+  })
+})
+
+// ── API v1 authentication smoke ────────────────────────────────────────────────
+
+test.describe('API v1 authentication', () => {
+  test('GET /api/v1/sites returns 401 when no API key is provided', async ({ request }) => {
+    const res = await request.get('/api/v1/sites')
+    expect(res.status()).toBe(401)
+    const body = await res.json()
+    expect(body.error).toBeTruthy()
+  })
+
+  test('GET /api/v1/sites returns 401 for an invalid API key', async ({ request }) => {
+    const res = await request.get('/api/v1/sites', {
+      headers: { Authorization: 'Bearer invalid_key_that_is_at_least_32_characters_long' },
+    })
+    expect(res.status()).toBe(401)
+    const body = await res.json()
+    expect(body.error).toBeTruthy()
+  })
+
+  test('GET /docs/api renders the API documentation page', async ({ page }) => {
+    await page.goto('/docs/api')
+    await expect(page.getByRole('heading', { name: /Beam Stats API/i })).toBeVisible()
+    // Check authentication section heading (more specific than matching text in code samples)
+    await expect(page.getByRole('heading', { name: 'Authentication' })).toBeVisible()
+    await page.screenshot({ path: 'screenshots/smoke/desktop-api-docs.png' })
+  })
+})
