@@ -1,3 +1,32 @@
+## Codebase Patterns
+- Production URL is `beam-privacy.com` (not `beam.keylightdigital.com` which returns 526, nor the deploy script URL `beam.keylightdigital.dev` which redirects to `beam-privacy.com`)
+- Local wrangler dev skips signup/login rate limiting when IP is 'unknown' — safe to run full smoke suite locally repeatedly
+- Production rate limits: 10 signups/hour/IP, 15 logins/15min/IP — run smoke suite against prod at most once per hour
+- Smoke tests at `test/smoke/smoke.spec.ts` and `test/smoke/ux-audit.spec.ts`, run with `npm run test:smoke`
+- `page.request.post()` (Playwright API) shares browser cookies and follows redirects — use for testing POST redirects instead of `page.evaluate(fetch)` with `redirect: 'manual'` (which returns opaque status 0 in browser context)
+- `test.use()` must be at `test.describe()` scope, not inside a `test()` body — wrap in a nested describe if needed
+
 # Ralph Progress Log
-Started: Sun Apr 12 10:38:24 AM PDT 2026
+Started: Sun Apr 12 07:11:26 PM PDT 2026
+---
+
+## 2026-04-13 - BEAM-210
+- Audited existing smoke tests vs all app routes — identified 10 uncovered flows
+- Added new test describe blocks in test/smoke/smoke.spec.ts:
+  - **Tracking script**: GET /js/beam.js — content-type, size < 2KB, sendBeacon present
+  - **Collect endpoint**: CORS preflight (204), missing site_id (400), unknown site_id (400), valid pageview (200/204)
+  - **Billing page**: free user sees upgrade CTA and usage meter; API key generate redirects free user back without flash; API key revoke redirects with api_key_revoked=1; mobile-safe at 375px
+  - **Alerts toggle**: clicking the On/Off button flips state and redirects back to site detail
+  - **Settings page**: renders account email and plan; mobile-safe at 375px
+  - **API v1 authentication**: missing key → 401; invalid key → 401
+  - **API docs page**: GET /docs/api renders Authentication heading
+- Updated CLAUDE.md with smoke test location, run commands, and correct production URL
+- Files changed: `test/smoke/smoke.spec.ts`, `CLAUDE.md`, `prd.json`, `progress.txt`
+- **Learnings for future iterations:**
+  - Production URL is `beam-privacy.com` — confirmed via `beam.keylightdigital.dev` redirect. `beam.keylightdigital.com` returns Cloudflare 526.
+  - Signup rate limit (10/hour/IP) means you can run the full suite against prod only once per hour — subsequent runs see 429 on all signup-dependent tests
+  - `fetch` with `redirect: 'manual'` in `page.evaluate()` returns opaque status 0, not 302/303 — use `page.request.post()` instead which follows redirects and exposes final URL
+  - `test.use()` cannot be called inside `test()` — must be at describe scope in a nested `test.describe()`
+  - Local smoke suite: 155/156 pass; ux-audit Journey 5 has occasional 10s mobile timeout (pre-existing flakiness, not introduced by this story)
+  - ux-audit.spec.ts uses a SHARED test user and serial execution — its tests fail with 429 when run multiple times from the same IP within the rate limit window
 ---

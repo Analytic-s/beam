@@ -3489,7 +3489,7 @@
       "id": "BEAM-210",
       "title": "Audit and complete smoke test suite for all core user flows",
       "priority": 210,
-      "passes": false,
+      "passes": true,
       "description": "Beam has test/smoke/ with smoke.spec.ts and ux-audit.spec.ts, but coverage may be incomplete. Audit all existing functionality using git history, the PRD, and Playwright exploration. Identify every primary user flow (site registration, dashboard viewing, analytics tracking, script installation, Stripe billing, API key management, alerts, etc.) and ensure each has a smoke test. Fill any gaps. Update CLAUDE.md with smoke test location and run command.",
       "acceptanceCriteria": [
         "All primary user flows identified and documented",
