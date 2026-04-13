@@ -14,12 +14,12 @@ routes = [
 [[d1_databases]]
 binding = "DB"
 database_name = "beam-db"
-database_id = "62c68903-0c63-447d-9236-c1221c1aa575"
+database_id = "e9726169-25a4-4189-aaee-b9c8f1b5ec56"
 migrations_dir = "migrations"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "eda926e0122f42daaec2772b2d552d04"
+id = "8d518c47a3dc42d3adec227cdfb805de"
 
 [triggers]
 crons = ["0 9 * * *", "0 9 * * 1"]
