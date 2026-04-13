@@ -1,0 +1,38 @@
+{
+  "name": "@keylightdigital/beam",
+  "version": "1.0.0",
+  "description": "Privacy-first web analytics tracking script — cookie-free, GDPR-friendly, lightweight (<2KB)",
+  "license": "MIT",
+  "main": "beam.js",
+  "module": "beam.js",
+  "types": "index.d.ts",
+  "homepage": "https://beam-privacy.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scobb/beam.git"
+  },
+  "bugs": {
+    "url": "https://github.com/scobb/beam/issues"
+  },
+  "keywords": [
+    "analytics",
+    "privacy",
+    "gdpr",
+    "cookie-free",
+    "cookieless",
+    "web-analytics",
+    "tracking",
+    "lightweight",
+    "privacy-first",
+    "cloudflare"
+  ],
+  "files": [
+    "beam.js",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prepublishOnly": "echo 'Publishing @keylightdigital/beam to npm'"
+  }
+}

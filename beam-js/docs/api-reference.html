@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference — Analytics API Documentation | beam.js</title>
+  <meta name="description" content="Beam analytics REST API documentation. Query pageviews, visitors, and custom events programmatically. Includes authentication, endpoints, and JavaScript examples." />
+  <link rel="canonical" href="https://scobb.github.io/beam.js/api-reference.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a202c; background: #fff; line-height: 1.6; }
+    .container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #111; }
+    .badge { display: inline-block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.75rem; margin-bottom: 1.5rem; }
+    p { margin-bottom: 1rem; color: #374151; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #111; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.4rem; }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #111; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; overflow-x: auto; margin-bottom: 1rem; }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; background: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-size: 0.875em; }
+    pre code { background: none; padding: 0; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2rem 0; }
+    .links a { display: inline-block; padding: 0.6rem 1.25rem; border-radius: 0.375rem; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: opacity 0.15s; }
+    .links a:hover { opacity: 0.85; }
+    .btn-primary { background: #111; color: #fff; }
+    .btn-secondary { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+    a { color: #15803d; }
+    ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+    ul li { margin-bottom: 0.4rem; color: #374151; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.875rem; }
+    th { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; color: #111; }
+    td { border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; color: #374151; }
+    .endpoint-tag { display: inline-block; background: #dbeafe; color: #1e40af; border-radius: 0.25rem; padding: 0.15rem 0.5rem; font-size: 0.75rem; font-weight: 700; font-family: monospace; margin-right: 0.5rem; }
+    .endpoint-tag.post { background: #fef3c7; color: #92400e; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.875rem; }
+    footer a { color: #6b7280; text-decoration: underline; }
+    nav { margin-bottom: 2rem; font-size: 0.875rem; color: #6b7280; }
+    nav a { color: #6b7280; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <nav><a href="./">beam.js docs</a> → API Reference</nav>
+
+  <h1>API Reference</h1>
+  <div class="badge">Analytics API Documentation · REST · JSON</div>
+
+  <p>
+    <a href="https://beam-privacy.com">Beam</a> provides a Stats API for querying your analytics data programmatically.
+    Use it to build dashboards, automate reports, or integrate Beam data into your own tools.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/signup" class="btn-primary">Get API Key</a>
+    <a href="https://beam-privacy.com/docs/api" class="btn-secondary">Full Docs</a>
+    <a href="https://beam-privacy.com/demo" class="btn-outline">Live Demo</a>
+  </div>
+
+  <h2>Authentication</h2>
+  <p>
+    All API requests require an API key. Generate one from your
+    <a href="https://beam-privacy.com/dashboard">Beam dashboard</a> under Settings → API Keys.
+  </p>
+  <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+
+  <h2>Base URL</h2>
+  <pre><code>https://beam-privacy.com/api</code></pre>
+
+  <h2>Endpoints</h2>
+
+  <h3><span class="endpoint-tag">GET</span> /api/stats</h3>
+  <p>Returns aggregated analytics for a site.</p>
+
+  <table>
+    <thead>
+      <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>site_id</code></td><td>string</td><td>Yes</td><td>Your site ID (from dashboard)</td></tr>
+      <tr><td><code>period</code></td><td>string</td><td>No</td><td><code>day</code>, <code>week</code>, <code>month</code>, <code>custom</code> (default: <code>month</code>)</td></tr>
+      <tr><td><code>start</code></td><td>string</td><td>No</td><td>Start date <code>YYYY-MM-DD</code> (required for <code>custom</code>)</td></tr>
+      <tr><td><code>end</code></td><td>string</td><td>No</td><td>End date <code>YYYY-MM-DD</code> (required for <code>custom</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Example request:</strong></p>
+  <pre><code>curl -H "Authorization: Bearer YOUR_API_KEY" \
+  "https://beam-privacy.com/api/stats?site_id=YOUR_SITE_ID&amp;period=week"</code></pre>
+
+  <p><strong>Example response:</strong></p>
+  <pre><code>{
+  "pageviews": 1240,
+  "visitors": 890,
+  "bounce_rate": 0.42,
+  "avg_duration": 87,
+  "top_pages": [
+    { "path": "/", "pageviews": 450, "visitors": 380 },
+    { "path": "/blog", "pageviews": 200, "visitors": 165 }
+  ],
+  "top_sources": [
+    { "source": "direct", "visitors": 400 },
+    { "source": "google", "visitors": 290 }
+  ]
+}</code></pre>
+
+  <h3><span class="endpoint-tag post">POST</span> /api/collect</h3>
+  <p>
+    Collects a pageview or custom event. This is the endpoint called by the
+    <code>beam.js</code> tracking script automatically. You can also call it server-side.
+  </p>
+
+  <p><strong>Pageview request body:</strong></p>
+  <pre><code>{
+  "site_id": "YOUR_SITE_ID",
+  "url": "https://example.com/page",
+  "referrer": "https://google.com",
+  "event": "pageview"
+}</code></pre>
+
+  <p><strong>Custom event request body:</strong></p>
+  <pre><code>{
+  "site_id": "YOUR_SITE_ID",
+  "url": "https://example.com/checkout",
+  "event": "purchase_complete",
+  "props": { "plan": "pro", "amount": 5 }
+}</code></pre>
+
+  <h2>JavaScript Client</h2>
+  <p>The <a href="https://beam-privacy.com/js/beam.js">beam.js tracking script</a> wraps the collection API:</p>
+
+  <pre><code>&lt;!-- Install the script --&gt;
+&lt;script defer
+  src="https://beam-privacy.com/js/beam.js"
+  data-site-id="YOUR_SITE_ID"&gt;
+&lt;/script&gt;
+
+&lt;!-- Track a custom event --&gt;
+&lt;script&gt;
+window.beam &amp;&amp; beam.track('button_click', { label: 'signup_cta' });
+&lt;/script&gt;</code></pre>
+
+  <h2>Goals API</h2>
+  <p>
+    Goals let you define conversion targets and track their completion rate.
+    Configure goals in your <a href="https://beam-privacy.com/dashboard">Beam dashboard</a>.
+  </p>
+  <p><strong>Goal pattern types:</strong></p>
+  <ul>
+    <li>Path-based: <code>/checkout/success</code> — matches any URL ending with that path</li>
+    <li>Event-based: <code>event:purchase_complete</code> — matches a named custom event</li>
+  </ul>
+
+  <h2>Rate Limits</h2>
+  <table>
+    <thead>
+      <tr><th>Endpoint</th><th>Rate Limit</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/api/collect</code></td><td>10,000 requests/minute per site</td></tr>
+      <tr><td><code>/api/stats</code></td><td>100 requests/minute per API key</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Full Documentation</h2>
+  <p>
+    See <a href="https://beam-privacy.com/docs/api">beam-privacy.com/docs/api</a> for the complete API reference
+    including filtering, sorting, goal queries, event breakdown endpoints, and SDK examples.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/signup" class="btn-primary">Get Free API Key</a>
+    <a href="https://beam-privacy.com/demo" class="btn-secondary">Try Live Demo</a>
+  </div>
+
+  <footer>
+    <p>
+      <a href="./">beam.js docs</a> · <a href="https://beam-privacy.com">beam-privacy.com</a> ·
+      <a href="https://github.com/scobb/beam.js">GitHub</a> ·
+      <a href="https://github.com/scobb/beam.js/discussions">Discussions</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>

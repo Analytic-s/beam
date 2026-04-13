@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Design — Cookie-Free Tracking Architecture | beam.js</title>
+  <meta name="description" content="How Beam analytics works without cookies, fingerprinting, or personal data. A technical explanation of cookieless analytics and GDPR-compliant visitor counting." />
+  <link rel="canonical" href="https://scobb.github.io/beam.js/privacy-design.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a202c; background: #fff; line-height: 1.6; }
+    .container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #111; }
+    .badge { display: inline-block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.75rem; margin-bottom: 1.5rem; }
+    p { margin-bottom: 1rem; color: #374151; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #111; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; overflow-x: auto; margin-bottom: 1rem; }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; background: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-size: 0.875em; }
+    pre code { background: none; padding: 0; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2rem 0; }
+    .links a { display: inline-block; padding: 0.6rem 1.25rem; border-radius: 0.375rem; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: opacity 0.15s; }
+    .links a:hover { opacity: 0.85; }
+    .btn-primary { background: #111; color: #fff; }
+    .btn-secondary { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    a { color: #15803d; }
+    ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+    ul li { margin-bottom: 0.4rem; color: #374151; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.875rem; }
+    th { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; color: #111; }
+    td { border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; color: #374151; }
+    .no { color: #dc2626; font-weight: 600; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.875rem; }
+    footer a { color: #6b7280; text-decoration: underline; }
+    nav { margin-bottom: 2rem; font-size: 0.875rem; color: #6b7280; }
+    nav a { color: #6b7280; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <nav><a href="./">beam.js docs</a> → Privacy Design</nav>
+
+  <h1>Privacy Design</h1>
+  <div class="badge">Cookie-Free Tracking Architecture · GDPR Compliant</div>
+
+  <p>
+    <a href="https://beam-privacy.com">Beam</a> collects meaningful analytics without cookies, fingerprinting,
+    or personal data storage. This page explains exactly how cookie-free tracking works.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/demo" class="btn-primary">Live Demo</a>
+    <a href="https://beam-privacy.com/signup" class="btn-secondary">Try Free</a>
+  </div>
+
+  <h2>The Problem with Cookie-Based Analytics</h2>
+  <p>Traditional analytics (Google Analytics, Mixpanel, etc.) set cookies to track users across sessions and devices. This creates two problems:</p>
+  <ol style="padding-left: 1.25rem; margin-bottom: 1rem;">
+    <li style="margin-bottom: 0.5rem; color: #374151;"><strong>Legal requirement</strong> — GDPR, CCPA, and ePrivacy Directive require explicit consent before setting tracking cookies in the EU and California.</li>
+    <li style="color: #374151;"><strong>Accuracy loss</strong> — consent banners result in 20–40% opt-out rates, making data unreliable.</li>
+  </ol>
+  <p>Beam solves both by not using cookies at all.</p>
+
+  <h2>How Beam Counts Unique Visitors Without Cookies</h2>
+  <p>Beam uses a <strong>daily session hash</strong> instead of persistent identifiers:</p>
+  <pre><code>hash = SHA-256(date + path + country + browser + screen_width)</code></pre>
+  <p>This hash is:</p>
+  <ul>
+    <li>Computed fresh each day — cannot track users across days</li>
+    <li>Derived from non-PII fields only — no IP, no email, no full user agent</li>
+    <li>Never stored anywhere — only the count is recorded</li>
+  </ul>
+  <p>The result: Beam can count unique visitors per day without storing any data that would require GDPR consent.</p>
+
+  <h2>What Beam Collects (and What It Doesn't)</h2>
+
+  <table>
+    <thead>
+      <tr><th>Data Point</th><th>Stored?</th><th>Why</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Page URL</td><td>Yes</td><td>Which pages are popular</td></tr>
+      <tr><td>Referrer URL</td><td>Yes, normalized</td><td>Traffic source attribution</td></tr>
+      <tr><td>Country code</td><td>Yes</td><td>Geographic breakdown (from IP, IP discarded)</td></tr>
+      <tr><td>Browser type</td><td>Yes, bucketed</td><td>Browser breakdown (Chrome/Firefox/Safari/Other)</td></tr>
+      <tr><td>Screen width</td><td>Yes, bucketed</td><td>Desktop/mobile/tablet breakdown</td></tr>
+      <tr><td>IP address</td><td class="no">No</td><td>Discarded immediately after country lookup</td></tr>
+      <tr><td>User ID</td><td class="no">No</td><td>No login required, no cross-session tracking</td></tr>
+      <tr><td>Personal data</td><td class="no">No</td><td>Nothing that identifies a natural person</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What Beam Does NOT Do</h2>
+  <ul>
+    <li>No cookie setting — not first-party, not third-party</li>
+    <li>No fingerprinting — no canvas, WebGL, font, or audio fingerprinting</li>
+    <li>No cross-site tracking — data stays scoped to your domain</li>
+    <li>No selling data — your analytics are only yours</li>
+    <li>No IP storage — country is derived then IP is discarded</li>
+  </ul>
+
+  <h2>GDPR Compliance</h2>
+  <p>Because Beam collects no personal data, it falls outside GDPR's scope for most use cases:</p>
+  <ul>
+    <li><strong>No consent banner required</strong> for the tracking script itself</li>
+    <li><strong>No data subject rights</strong> apply (no personal data = nothing to delete or export)</li>
+    <li><strong>No DPA required</strong> between you and Beam for core analytics</li>
+  </ul>
+  <p>
+    You should still mention Beam in your privacy policy for transparency.
+    See <a href="https://beam-privacy.com/privacy">beam-privacy.com/privacy</a> for sample privacy policy language.
+    For a fuller overview of the technical architecture, see
+    <a href="https://beam-privacy.com/how-it-works">beam-privacy.com/how-it-works</a>.
+  </p>
+
+  <h2>Infrastructure Privacy</h2>
+  <p>Beam runs on Cloudflare's global edge network:</p>
+  <ul>
+    <li>Analytics events processed at the edge closest to the visitor</li>
+    <li>Data stored in Cloudflare D1 (SQLite-compatible)</li>
+    <li>No third-party analytics services involved</li>
+    <li>Dashboard served from <a href="https://beam-privacy.com">beam-privacy.com</a></li>
+  </ul>
+
+  <h2>Open Source Transparency</h2>
+  <p>
+    The tracking script (<code>beam.js</code>) is fully open source under the MIT license.
+    You can audit exactly what data is sent — no obfuscation, no phone-home behavior beyond the analytics endpoint.
+  </p>
+  <ul>
+    <li><a href="https://github.com/scobb/beam.js/blob/main/beam.js">View beam.js source on GitHub</a></li>
+    <li><a href="https://beam-privacy.com/docs/api">Full API documentation</a></li>
+  </ul>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/demo" class="btn-primary">See the Dashboard</a>
+    <a href="https://beam-privacy.com/signup" class="btn-secondary">Start Free</a>
+  </div>
+
+  <footer>
+    <p>
+      <a href="./">beam.js docs</a> · <a href="https://beam-privacy.com">beam-privacy.com</a> ·
+      <a href="https://github.com/scobb/beam.js">GitHub</a> ·
+      <a href="https://github.com/scobb/beam.js/discussions">Discussions</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>

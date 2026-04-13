@@ -4,3 +4,8 @@ dist/
 *.local
 .env
 .dev.vars
+
+# Playwright test artifacts
+screenshots/
+test-results/
+playwright-report/

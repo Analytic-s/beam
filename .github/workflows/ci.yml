@@ -46,7 +46,7 @@ jobs:
         run: npm ci
 
       - name: Deploy
-        run: npx wrangler deploy
+        run: npx wrangler deploy --config wrangler-noroutesdeploy.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

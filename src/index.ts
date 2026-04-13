@@ -255,6 +255,9 @@ ${urls}
   return new Response(xml, { headers: { 'Content-Type': 'application/xml' } })
 })
 
+// Health check endpoint — used by uptime monitoring
+app.get('/health', (c) => c.json({ status: 'ok' }))
+
 // Auth routes (signup/login pages + API endpoints)
 app.route('/', auth)
 

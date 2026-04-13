@@ -10,7 +10,11 @@ const wpReadmeFile = resolve(pluginDir, 'readme.txt')
 const packagingChecklistFile = resolve(process.cwd(), '../beam-wordpress-plugin/PACKAGING_CHECKLIST.md')
 const buildScriptFile = resolve(process.cwd(), '../beam-wordpress-plugin/build-plugin-zip.sh')
 
-test('wordpress plugin package includes required files', () => {
+// These tests require the beam-wordpress-plugin/ directory to be present
+// (exists in the monorepo worktree but not in the standalone GitHub repo)
+const pluginAvailable = existsSync(pluginDir)
+
+test('wordpress plugin package includes required files', { skip: !pluginAvailable ? 'beam-wordpress-plugin not found (standalone repo)' : false }, () => {
   assert.equal(existsSync(pluginDir), true)
   assert.equal(existsSync(pluginMainFile), true)
   assert.equal(existsSync(pluginReadmeFile), true)
@@ -19,7 +23,7 @@ test('wordpress plugin package includes required files', () => {
   assert.equal(existsSync(buildScriptFile), true)
 })
 
-test('plugin header and hooks include required Beam integration metadata', () => {
+test('plugin header and hooks include required Beam integration metadata', { skip: !pluginAvailable ? 'beam-wordpress-plugin not found (standalone repo)' : false }, () => {
   const php = readFileSync(pluginMainFile, 'utf8')
 
   assert.match(php, /Plugin Name:\s+Beam Analytics/)
@@ -31,7 +35,7 @@ test('plugin header and hooks include required Beam integration metadata', () =>
   assert.match(php, /apply_filters\('beam_analytics_base_url', self::DEFAULT_BASE_URL\)/)
 })
 
-test('plugin documentation includes install guidance and minimum version support', () => {
+test('plugin documentation includes install guidance and minimum version support', { skip: !pluginAvailable ? 'beam-wordpress-plugin not found (standalone repo)' : false }, () => {
   const readme = readFileSync(pluginReadmeFile, 'utf8')
   const wpReadme = readFileSync(wpReadmeFile, 'utf8')
 
@@ -46,7 +50,7 @@ test('plugin documentation includes install guidance and minimum version support
   assert.match(wpReadme, /plugin only injects Beam's tracking script/i)
 })
 
-test('packaging assets include repeatable zip command and submission checklist', () => {
+test('packaging assets include repeatable zip command and submission checklist', { skip: !pluginAvailable ? 'beam-wordpress-plugin not found (standalone repo)' : false }, () => {
   const checklist = readFileSync(packagingChecklistFile, 'utf8')
   const buildScript = readFileSync(buildScriptFile, 'utf8')
 

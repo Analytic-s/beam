@@ -27,3 +27,19 @@ crons = ["0 9 * * *", "0 9 * * 1"]
 [vars]
 ENVIRONMENT = "production"
 BEAM_SELF_SITE_ID = "dfa32f6b-0775-43df-a2c4-eb23787e5f03"
+
+[env.staging]
+name = "beam-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "beam-db-staging"
+database_id = "121c2d4a-89ad-4237-94e0-43810eb51f76"
+migrations_dir = "migrations"
+
+[[env.staging.kv_namespaces]]
+binding = "KV"
+id = "fc6960cc89ae497fb6040bdb55704f46"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"

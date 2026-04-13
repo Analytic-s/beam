@@ -1,41 +1,56 @@
 #!/usr/bin/env bash
-# deploy.sh — Safe production deploy for Beam
-#
-# Usage:
-#   cd beam && bash deploy.sh
-#   npm run deploy     (from beam/ directory)
-#
-# Steps (in order):
-#   1. TypeScript typecheck — fail fast on type errors
-#   2. D1 migrations apply --remote — never skip schema migrations
-#   3. wrangler deploy — publish updated worker
-#   4. (Optional) npm run ping — notify search engines (run separately)
-#
-# This script ensures migrations are always applied before code deploys.
-# Run `npm run deploy:ping` to also ping search engines after deploying.
-
+# Beam deployment script
+# Usage: bash deploy.sh staging|prod
 set -euo pipefail
 
-echo "=== Beam Production Deploy ==="
-echo ""
+ENV="${1:-}"
+if [[ "$ENV" != "staging" && "$ENV" != "prod" ]]; then
+  echo "Usage: bash deploy.sh staging|prod"
+  exit 1
+fi
 
-# ── 1. TypeScript typecheck ──────────────────────────────────────────────────
-echo "Step 1/3: TypeScript typecheck..."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+echo "=== Beam $ENV Deployment ==="
+
+if [ "$ENV" = "staging" ]; then
+  WRANGLER_ENV="staging"
+  DB_NAME="beam-db-staging"
+  DEPLOY_URL="https://beam-staging.keylightdigital.dev"
+else
+  WRANGLER_ENV=""
+  DB_NAME="beam-db"
+  DEPLOY_URL="https://beam.keylightdigital.dev"
+fi
+
+WRANGLER_ENV_FLAG="${WRANGLER_ENV:+--env $WRANGLER_ENV}"
+
+# Step 1: TypeScript check
+echo "[1/4] TypeScript typecheck..."
 npm run typecheck
-echo "  ✓ TypeScript clean"
-echo ""
+echo "  TypeScript clean"
 
-# ── 2. D1 migrations apply --remote ─────────────────────────────────────────
-echo "Step 2/3: Applying D1 migrations to remote database..."
-npx wrangler d1 migrations apply beam-db --remote
-echo "  ✓ Migrations applied"
-echo ""
+# Step 2: Apply D1 migrations
+echo "[2/4] Applying D1 migrations to $DB_NAME..."
+npx wrangler d1 migrations apply "$DB_NAME" --remote $WRANGLER_ENV_FLAG
+echo "  Migrations applied"
 
-# ── 3. Wrangler deploy ───────────────────────────────────────────────────────
-echo "Step 3/3: Deploying Worker to Cloudflare..."
-npx wrangler deploy
-echo "  ✓ Worker deployed"
-echo ""
+# Step 3: Deploy worker
+echo "[3/4] Deploying worker..."
+npx wrangler deploy $WRANGLER_ENV_FLAG
+echo "  Worker deployed"
 
-echo "=== Deploy complete ==="
-echo "Run 'npm run ping' to notify search engines."
+# Step 4: Health check
+echo "[4/4] Verifying deployment..."
+sleep 3
+HEALTH=$(curl -sf "$DEPLOY_URL/health" 2>/dev/null || echo "FAILED")
+if echo "$HEALTH" | grep -q '"ok"'; then
+  echo "  Health check passed: $HEALTH"
+else
+  echo "  WARNING: Health check failed or timed out: $HEALTH"
+fi
+
+echo ""
+echo "=== $ENV deploy complete ==="
+echo "DEPLOY_URL=$DEPLOY_URL"

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started — Privacy Analytics Setup | beam.js</title>
+  <meta name="description" content="Set up Beam privacy analytics on your site in under 5 minutes. Cookie-free, GDPR-friendly web analytics. No consent banners required." />
+  <link rel="canonical" href="https://scobb.github.io/beam.js/getting-started.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a202c; background: #fff; line-height: 1.6; }
+    .container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #111; }
+    .badge { display: inline-block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.75rem; margin-bottom: 1.5rem; }
+    p { margin-bottom: 1rem; color: #374151; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #111; }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #111; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; overflow-x: auto; margin-bottom: 1rem; }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2rem 0; }
+    .links a { display: inline-block; padding: 0.6rem 1.25rem; border-radius: 0.375rem; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: opacity 0.15s; }
+    .links a:hover { opacity: 0.85; }
+    .btn-primary { background: #111; color: #fff; }
+    .btn-secondary { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+    a { color: #15803d; }
+    ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+    ul li { margin-bottom: 0.4rem; color: #374151; }
+    .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .step-num { flex-shrink: 0; width: 2rem; height: 2rem; background: #111; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; margin-top: 0.1rem; }
+    .step-body { flex: 1; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.875rem; }
+    footer a { color: #6b7280; text-decoration: underline; }
+    nav { margin-bottom: 2rem; font-size: 0.875rem; color: #6b7280; }
+    nav a { color: #6b7280; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <nav><a href="./">beam.js docs</a> → Getting Started</nav>
+
+  <h1>Getting Started</h1>
+  <div class="badge">Privacy Analytics Setup · 5-Minute Guide</div>
+
+  <p>
+    Set up <a href="https://beam-privacy.com">Beam</a> privacy analytics on your site in under 5 minutes.
+    No cookies, no consent banners, no GDPR headaches — just clean, accurate pageview data.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/signup" class="btn-primary">Create Free Account</a>
+    <a href="https://beam-privacy.com/demo" class="btn-secondary">See Demo First</a>
+  </div>
+
+  <h2>Step-by-Step Setup</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Create a Free Account</h3>
+      <p>
+        <a href="https://beam-privacy.com/signup">Sign up at beam-privacy.com/signup</a> — the free tier includes
+        1 site and 50,000 pageviews/month. No credit card required.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Add Your Site</h3>
+      <p>
+        After signing up, go to your <a href="https://beam-privacy.com/dashboard">Beam dashboard</a> and click
+        <strong>Add Site</strong>. Enter your domain (e.g. <code>example.com</code>) and copy your unique
+        <code>data-site-id</code>.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Install the Tracking Script</h3>
+      <p>Paste this snippet before the closing <code>&lt;/head&gt;</code> tag on every page you want to track:</p>
+      <pre><code>&lt;script defer
+  src="https://beam-privacy.com/js/beam.js"
+  data-site-id="YOUR_SITE_ID"&gt;
+&lt;/script&gt;</code></pre>
+      <p>Replace <code>YOUR_SITE_ID</code> with the ID from your dashboard.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Verify Installation</h3>
+      <p>
+        Return to your <a href="https://beam-privacy.com/dashboard">Beam dashboard</a> and open your site.
+        Click <strong>Verify Installation</strong> — Beam checks for the first pageview signal and confirms
+        the script is active.
+      </p>
+    </div>
+  </div>
+
+  <h2>Framework-Specific Guides</h2>
+  <p>Beam works on any HTML page. For framework-specific installation instructions see:</p>
+  <ul>
+    <li><a href="https://beam-privacy.com/for/nextjs">Next.js Analytics Guide</a></li>
+    <li><a href="https://beam-privacy.com/for/wordpress">WordPress Analytics Guide</a></li>
+    <li><a href="https://beam-privacy.com/for/astro">Astro Analytics Guide</a></li>
+    <li><a href="https://beam-privacy.com/for/webflow">Webflow Analytics Guide</a></li>
+    <li><a href="https://beam-privacy.com/for/shopify">Shopify Analytics Guide</a></li>
+  </ul>
+
+  <h2>Tracking Custom Events</h2>
+  <p>Beyond pageviews, you can track button clicks, form submissions, and other interactions:</p>
+  <pre><code>&lt;script&gt;
+// Track a custom event
+window.beam &amp;&amp; beam.track('signup_complete');
+
+// Track with properties
+window.beam &amp;&amp; beam.track('purchase', { plan: 'pro', amount: 5 });
+&lt;/script&gt;</code></pre>
+  <p>View event data in your <a href="https://beam-privacy.com/dashboard">dashboard</a> under the <strong>Events</strong> tab.</p>
+
+  <h2>What Data is Collected?</h2>
+  <p>Beam collects: page URL and referrer, country (from IP — IP is never stored), browser type, and screen width.</p>
+  <p>
+    Beam <strong>never</strong> stores IP addresses, personal identifiers, or any data that requires GDPR consent.
+    See <a href="privacy-design.html">Privacy Design</a> for the full technical breakdown, or
+    <a href="https://beam-privacy.com/how-it-works">beam-privacy.com/how-it-works</a> for an overview.
+  </p>
+
+  <h2>Need Help?</h2>
+  <ul>
+    <li><a href="https://beam-privacy.com/demo">Live Demo</a> — see what the dashboard looks like</li>
+    <li><a href="https://beam-privacy.com/docs/api">API Documentation</a> — advanced configuration</li>
+    <li><a href="https://github.com/scobb/beam.js/discussions">Open a Discussion</a> — get help from the community</li>
+  </ul>
+
+  <footer>
+    <p>
+      <a href="./">beam.js docs</a> · <a href="https://beam-privacy.com">beam-privacy.com</a> ·
+      <a href="https://github.com/scobb/beam.js">GitHub</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>

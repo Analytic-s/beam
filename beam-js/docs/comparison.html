@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Analytics Comparison 2026 — Beam vs Plausible vs Fathom vs Umami vs Rybbit</title>
+  <meta name="description" content="Honest comparison of privacy-first web analytics tools in 2026. Beam, Plausible, Fathom, Umami, and Rybbit compared on pricing, free tier, and Cloudflare edge performance." />
+  <link rel="canonical" href="https://scobb.github.io/beam.js/comparison.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a202c; background: #fff; line-height: 1.6; }
+    .container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #111; }
+    .badge { display: inline-block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.75rem; margin-bottom: 1.5rem; }
+    p { margin-bottom: 1rem; color: #374151; }
+    h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #111; }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #111; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.875rem; }
+    th { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; color: #111; }
+    td { border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; color: #374151; }
+    .highlight td:first-child { font-weight: 600; color: #15803d; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2rem 0; }
+    .links a { display: inline-block; padding: 0.6rem 1.25rem; border-radius: 0.375rem; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: opacity 0.15s; }
+    .links a:hover { opacity: 0.85; }
+    .btn-primary { background: #111; color: #fff; }
+    .btn-secondary { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+    a { color: #15803d; }
+    ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+    ul li { margin-bottom: 0.3rem; color: #374151; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.875rem; }
+    footer a { color: #6b7280; text-decoration: underline; }
+    .note { background: #f8fafc; border-left: 3px solid #d1d5db; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 0.375rem 0.375rem 0; font-size: 0.875rem; color: #6b7280; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Privacy Analytics Comparison 2026</h1>
+  <div class="badge">Beam · Plausible · Fathom · Umami · Rybbit</div>
+
+  <p>
+    Choosing a cookie-free analytics tool comes down to three things: price, free tier generosity,
+    and whether the architecture can handle your traffic without surprises. This comparison covers the
+    five most-discussed privacy-first options in 2026 — with honest trade-offs, not marketing copy.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/demo" class="btn-primary">See Beam Demo</a>
+    <a href="https://beam-privacy.com/signup" class="btn-secondary">Try Beam Free</a>
+  </div>
+
+  <h2>Quick comparison</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Free tier</th>
+        <th>Paid plan</th>
+        <th>Hosting</th>
+        <th>Open source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>Beam</td>
+        <td>50K pv/mo, 1 site</td>
+        <td>$5/mo — 500K pv, unlimited sites</td>
+        <td>Cloudflare edge</td>
+        <td>Yes (MIT)</td>
+      </tr>
+      <tr>
+        <td>Plausible</td>
+        <td>30-day trial only</td>
+        <td>$9/mo — 10K pv</td>
+        <td>EU cloud</td>
+        <td>Yes (AGPL)</td>
+      </tr>
+      <tr>
+        <td>Fathom</td>
+        <td>7-day trial only</td>
+        <td>$15/mo — 100K pv</td>
+        <td>US/EU cloud</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>Umami</td>
+        <td>Generous (self-host)</td>
+        <td>$9/mo (cloud) or free (self-host)</td>
+        <td>Self-host or cloud</td>
+        <td>Yes (MIT)</td>
+      </tr>
+      <tr>
+        <td>Rybbit</td>
+        <td>Self-host only</td>
+        <td>Free (self-host)</td>
+        <td>Self-host only</td>
+        <td>Yes (AGPL)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Where Beam wins</h2>
+
+  <h3>Lowest paid plan price</h3>
+  <p>
+    At $5/month, Beam is the cheapest managed privacy-analytics option — 44% cheaper than Plausible
+    ($9/mo) and 67% cheaper than Fathom ($15/mo). The lower cost is possible because Cloudflare
+    Workers and D1 have a dramatically lower cost basis than traditional cloud VMs.
+  </p>
+
+  <h3>Most generous free tier</h3>
+  <p>
+    Beam's free tier supports 50,000 pageviews per month with no credit card required. Plausible has
+    no permanent free tier (trial only). Fathom's trial is 7 days. Most small sites — blogs, project
+    pages, portfolios — will never pay anything.
+  </p>
+
+  <h3>Edge-native architecture</h3>
+  <p>
+    Beam runs on Cloudflare's edge network. The tracking endpoint is served from 300+ locations
+    worldwide, which means sub-50ms response times for visitors on every continent. Traditional
+    cloud-hosted tools run from one or two regions.
+  </p>
+
+  <h3>No cookie banner required</h3>
+  <p>
+    Like all tools in this list, Beam is cookieless. But unlike tools that rely on browser
+    fingerprinting, Beam uses a non-PII daily hash (date + path + country + browser + screen width)
+    that cannot be used to track individuals across sessions or sites.
+  </p>
+
+  <h2>Where competitors win</h2>
+
+  <h3>Plausible</h3>
+  <p>
+    Plausible has a larger user community, more integrations, and a longer track record. If you're
+    migrating from Google Analytics and want battle-tested reliability, Plausible is a safe choice.
+    You'll pay more, but you get a more mature product.
+  </p>
+
+  <h3>Umami (self-hosted)</h3>
+  <p>
+    If you control your own server and want zero hosting cost, Umami is excellent. The self-hosted
+    setup is straightforward and the dashboard is polished. The trade-off is operational overhead —
+    you manage updates, backups, and uptime yourself.
+  </p>
+
+  <h3>Rybbit</h3>
+  <p>
+    Rybbit is fully self-hosted with no cloud option. If data sovereignty is non-negotiable and you
+    want to run everything on your own infrastructure, Rybbit is worth evaluating alongside Umami.
+  </p>
+
+  <h2>Honest limitations of Beam</h2>
+  <ul>
+    <li>Beam is newer — fewer third-party integrations than Plausible</li>
+    <li>500K pageview cap on Pro plan; Plausible and Fathom have higher-tier plans for larger sites</li>
+    <li>No goal funnels or user journey tracking (by design — those features require more data collection)</li>
+  </ul>
+
+  <div class="note">
+    Pricing data is from April 2026. Check each vendor's current pricing page before deciding.
+  </div>
+
+  <h2>Try Beam</h2>
+  <p>
+    Beam is free for up to 50,000 pageviews per month. No credit card, no trial expiry. Add one
+    script tag and start seeing data in minutes.
+  </p>
+
+  <div class="links">
+    <a href="https://beam-privacy.com/signup" class="btn-primary">Create free account</a>
+    <a href="https://beam-privacy.com/demo" class="btn-secondary">View live demo</a>
+    <a href="https://beam-privacy.com/alternatives" class="btn-outline">More comparisons</a>
+  </div>
+
+  <footer>
+    <p>
+      <a href="https://scobb.github.io/beam.js/">beam.js open-source package</a> ·
+      <a href="https://beam-privacy.com">beam-privacy.com</a> ·
+      <a href="https://github.com/scobb/beam.js">GitHub</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>
