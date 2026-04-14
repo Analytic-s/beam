@@ -3,6 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
+
 #routes = [
 #  { pattern = "beam.keylightdigital.dev/*", zone_name = "keylightdigital.dev" }
 #]
